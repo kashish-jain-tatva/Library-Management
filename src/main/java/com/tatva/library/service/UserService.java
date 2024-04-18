@@ -1,5 +1,7 @@
 package com.tatva.library.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,13 @@ public class UserService {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	public User updateUser(User validUser) {
+		Optional<User> opUser = userRepository.findById(validUser.getId());
+		User user = opUser.get();
+		user.setUserName(validUser.getUserName());
+		return userRepository.save(user);
+	}
 	
 	public User createUsers(User user) {
 		if(user.getUserName() == null) {

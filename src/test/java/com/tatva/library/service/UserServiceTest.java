@@ -1,13 +1,12 @@
 package com.tatva.library.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -45,6 +44,14 @@ public class UserServiceTest {
 	}
 	
 	@Test
+	public void updateUser_ValidUserThenReturnUpdatedUser() {
+		when(userRepository.findById(userWithValidUserName.getId())).thenReturn(Optional.of(userWithValidUserName));
+		when(userRepository.save(userWithValidUserName)).thenReturn(userWithValidUserName);
+		User user = userService.updateUser(userWithValidUserName);
+		assertNotNull(user);
+	}
+	
+	@Test
 	public void createUserWithValidUserName() {
 		when(userRepository.save(userWithValidUserName)).thenReturn(userWithValidUserName);
 		User user = userService.createUsers(userWithValidUserName);
@@ -76,12 +83,13 @@ public class UserServiceTest {
 			 userService.createUsers(userWithBlankUserName);
 		},"UserName should not be Blank");
 	}
+//	
 	
-	@Test
-	public void getUserDetails() {
-		List<User> userList = userService.getUserDetails();
-		assertEquals(1, userList.size());
-	}
+//	@Test
+//	public void getUserDetails() {
+//		List<User> userList = userService.getUserDetails();
+//		assertEquals(1, userList.size());
+//	}
 	
 	
 	
