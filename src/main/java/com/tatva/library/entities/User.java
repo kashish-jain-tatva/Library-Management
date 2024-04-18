@@ -3,7 +3,7 @@ package com.tatva.library.entities;
 import java.util.List;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 
@@ -11,6 +11,7 @@ import lombok.Data;
 @Data
 public class User {
 
+	@Id
 	private Long id ;
 	
 	private String userName ;
