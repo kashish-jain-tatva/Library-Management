@@ -1,6 +1,9 @@
 package com.tatva.library.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -13,32 +16,81 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.tatva.library.entities.User;
+import com.tatva.library.exception.UserNameNullOrEmptyException;
 import com.tatva.library.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 	
+	@Mock
+	private UserRepository userRepository;
+	
 	@InjectMocks
 	private UserService userService;
 	
-	@Mock
-	private UserRepository userRepo;
-	
-	private static User userWithNullUsername,userWithEmptyUserName,validUser;
-	
+	private static User userWithValidUserName , userWithNullUserName , userWithEmptyUserName,userWithBlankUserName;
+
 	@BeforeAll
 	static void setUp() {
-		userWithNullUsername = User.builder().userName(null).build();
+		userWithValidUserName = User.builder().id(1L).userName("Priya")
+				.build();
+		
+		userWithNullUserName = User.builder().userName(null).build();
+		
 		userWithEmptyUserName = User.builder().userName("").build();
-		validUser = User.builder().userName("Kashish").id(1l).build();
+		
+		userWithBlankUserName = User.builder().userName(" ").build();
+		
 	}
 	
 	@Test
 	public void updateUser_ValidUserThenReturnUpdatedUser() {
-		when(userRepo.findById(validUser.getId())).thenReturn(Optional.of(validUser));
-		when(userRepo.save(validUser)).thenReturn(validUser);
-		User user = userService.updateUser(validUser);
+		when(userRepository.findById(userWithValidUserName.getId())).thenReturn(Optional.of(userWithValidUserName));
+		when(userRepository.save(userWithValidUserName)).thenReturn(userWithValidUserName);
+		User user = userService.updateUser(userWithValidUserName);
 		assertNotNull(user);
 	}
-
+	
+	@Test
+	public void createUserWithValidUserName() {
+		when(userRepository.save(userWithValidUserName)).thenReturn(userWithValidUserName);
+		User user = userService.createUsers(userWithValidUserName);
+		assertEquals(user.getUserName(), userWithValidUserName.getUserName());
+	}
+	
+	@Test
+	public void createUserThrowException() {
+		assertThrows(UserNameNullOrEmptyException.class, ()->{
+			User user = userService.createUsers(userWithNullUserName);
+		});
+	}
+	
+	
+	@Test
+	public void createUserWithEmptyUserName() {
+		assertThrows(UserNameNullOrEmptyException.class, ()->{
+			User user = userService.createUsers(userWithEmptyUserName);
+		});
+	}
+	
+	@Test
+	public void createUserWithBlankUserName() {
+//		assertThrows(UserNameNullOrEmptyException.class, ()->{
+//			User user = userService.createUsers(userWithBlankUserName);
+//		});
+		
+		assertThrowsExactly(UserNameNullOrEmptyException.class, ()->{
+			 userService.createUsers(userWithBlankUserName);
+		},"UserName should not be Blank");
+	}
+//	
+	
+//	@Test
+//	public void getUserDetails() {
+//		List<User> userList = userService.getUserDetails();
+//		assertEquals(1, userList.size());
+//	}
+	
+	
+	
 }
