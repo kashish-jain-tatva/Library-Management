@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.tatva.library.entities.User;
+import com.tatva.library.exception.ResourceNotFoundException;
 import com.tatva.library.exception.UserNameNullOrEmptyException;
 import com.tatva.library.repository.UserRepository;
 
@@ -91,6 +93,48 @@ public class UserServiceTest {
 //		assertEquals(1, userList.size());
 //	}
 	
+	
+	@Test
+	public void updateUser_UserNotFound_ThenThrowsResourceNotFoundException() {
+		when(userRepository.findById(userWithValidUserName.getId())).thenReturn(Optional.empty());
+		assertThrows(ResourceNotFoundException.class, () -> {
+			userService.updateUser(userWithValidUserName);
+		});
+	}
+	
+	@Test
+	public void updateUser_UsernameNull_ThenThrowsUserNameNullOrEmptyException() {
+		assertThrows(UserNameNullOrEmptyException.class, () -> {
+			userService.updateUser(userWithNullUserName);
+		});
+	}
+	
+	@Test
+	public void updateUser_UsernameEmpty_ThenThrowsUserNameNullOrEmptyException() {
+		assertThrows(UserNameNullOrEmptyException.class, () -> {
+			userService.updateUser(userWithEmptyUserName);
+		});
+	}
+	
+	@Test
+	public void updateUser_UsernameBlank_ThenThrowsUserNameNullOrEmptyException() {
+		assertThrows(UserNameNullOrEmptyException.class, () -> {
+			userService.updateUser(userWithEmptyUserName);
+		});
+	}
+	
+	@Test
+	public void deleteUser_validUser_ThenReturnSuccess() {
+		when(userRepository.findById(userWithValidUserName.getId())).thenReturn(Optional.of(userWithValidUserName));
+		assertTrue(userService.deleteUser(userWithValidUserName.getId()));
+	}
+	
+	@Test
+	public void deleteUser_userNotFound_ThenThrowsResourceNotFoundException() {
+		assertThrows(ResourceNotFoundException.class, () -> {
+			userService.deleteUser(userWithValidUserName.getId());
+		});
+	}
 	
 	
 }
