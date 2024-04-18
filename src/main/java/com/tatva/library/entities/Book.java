@@ -1,9 +1,13 @@
 package com.tatva.library.entities;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.Data;
 
 @Entity
+@Data
 public class Book {
 	
 	@Id
@@ -11,6 +15,8 @@ public class Book {
 	
 	private String name;
 	
-	private Long quantity;
+	private LocalDateTime checkIn ;
+	
+	private LocalDateTime checkOut ;
 
 }
